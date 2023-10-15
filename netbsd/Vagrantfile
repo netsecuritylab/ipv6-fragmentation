@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+load '../attacker/Vagrantfile'
+
+Vagrant.configure("2") do |config|
+  # *** "victim" VM
+  config.vm.define "victim" do |v|
+    v.vm.hostname = "victim"
+	v.vm.box = "generic/netbsd9"
+	v.vm.box_version = "4.2.16"
+
+    v.vm.network :private_network, ip: "192.168.122.1",
+      libvirt__network_name: "extnet",
+      libvirt__forward_mode: "veryisolated",
+      libvirt__dhcp_enabled: false,
+      libvirt__guest_ipv6: "yes",
+      libvirt__ipv6_address: "2001:DB8::1",
+      libvirt__ipv6_prefix: "64",
+      virtualbox__intnet: "extnet"
+
+    v.vm.provision "shell", inline: <<-SCRIPT
+echo 'ip6mode=\"host\"' >> /etc/rc.conf
+echo 'ifconfig_wm1=\"media autoselect up;inet 192.168.122.1 netmask 255.255.255.0;inet6 2001:db8::1 prefixlen 64 alias\"' >> /etc/rc.conf
+/etc/rc.d/network start
+SCRIPT
+  end
+end

@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Common configuration
+  config.vm.box = "debian/bullseye64"
+  config.vm.box_version = "11.20230501.1"
+  config.ssh.insert_key = false
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vbguest.auto_update = false
+
+  # VirtualBox specific config
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+    v.cpus = 1
+    v.gui = false
+  end
+
+  # libvirt specific config
+  config.vm.provider :libvirt do |v|
+    v.memory = 512
+    v.cpus = 1
+  end
+
+  # *** "attacker" VM
+  config.vm.define "attacker" do |v|
+    v.vm.hostname = "attacker"
+    
+    v.vm.network :private_network, ip: "192.168.124.2",
+      libvirt__network_name: "extnet",
+      libvirt__forward_mode: "veryisolated",
+      libvirt__dhcp_enabled: false,
+      libvirt__guest_ipv6: "yes",
+      libvirt__ipv6_address: "2001:DB8::2",
+      libvirt__ipv6_prefix: "64",
+      virtualbox__intnet: "extnet"
+
+    v.vm.provision "shell", inline: "chmod a+rwx /opt/", privileged: true
+    v.vm.provision "file", source: "../common.py", destination: "/opt/common.py"
+    v.vm.provision "file", source: "../overlap_header.py", destination: "/opt/overlap_header.py"
+    v.vm.provision "file", source: "../overlap_header2.py", destination: "/opt/overlap_header2.py"
+    v.vm.provision "file", source: "../paxson_working2.py", destination: "/opt/paxson_working2.py"
+    v.vm.provision "file", source: "../requirements.txt",   destination: "/opt/requirements.txt"
+    v.vm.provision "file", source: "../no_overlapping.py",  destination: "/opt/no_overlapping.py"
+	v.vm.provision "file", source: "../plain_request.py",   destination: "/opt/plain_request.py"
+	v.vm.provision "file", source: "../attacker/attack.sh", destination: "/opt/attack.sh"
+    v.vm.provision "shell", path: "../attacker/prepare_attacker.sh", env: {"apt_proxy" => "#{ENV['apt_proxy']}"}
+  end
+  
+end

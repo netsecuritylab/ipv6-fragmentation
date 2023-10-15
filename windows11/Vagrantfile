@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+load '../attacker/Vagrantfile'
+
+Vagrant.configure("2") do |config|
+  # *** "victim" VM
+  config.vm.define "victim" do |v|
+    v.vm.hostname = "victim"
+    v.vm.box = "gusztavvargadr/windows-11"
+	v.vm.box_version = "2202.0.2305"
+    v.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "4096"]
+    end
+
+    v.vm.network :private_network, ip: "192.168.122.2",
+      libvirt__network_name: "extnet",
+      libvirt__forward_mode: "veryisolated",
+      libvirt__dhcp_enabled: false,
+      libvirt__guest_ipv6: "yes",
+      libvirt__ipv6_address: "2001:DB8::1",
+      libvirt__ipv6_prefix: "64",
+      virtualbox__intnet: "extnet"
+
+    v.vm.provision "shell", path: "./prepare_victim.ps1"
+  end
+end

@@ -1,0 +1,2 @@
+New-NetIPAddress -IPAddress 2001:DB8::1 -PrefixLength 64 -InterfaceAlias "Ethernet 2"
+netsh advfirewall firewall add rule name="ICMP Allow incoming V6 echo request" protocol="icmpv6:128,any" dir=in action=allow
