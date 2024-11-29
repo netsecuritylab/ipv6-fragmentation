@@ -8,6 +8,21 @@ This is the source code for the experiments that we presented in our paper _Di P
   * Plugins (install with `vagrant plugin install`): `vagrant-vbguest`, `winrm`, `winrm-elevated`, `vagrant-scp`
 * VirtualBox or libvirt (for vagrant)
 
+## License
+
+The dataset is released under CC-BY, and the code is licensed under MIT. You are free to use the code and the dataset as long as you cite our work.
+
+Use this `bibtex` entry to cite our paper:
+```bibtex
+@inproceedings{anewmodel,
+    year       = 2023,
+    title      = "A New Model for Testing IPv6 Fragment Handling",
+    author     = "Di Paolo, Edoardo and Bassetti, Enrico and Spognardi, Angelo",
+    booktitle  = "Proceedings of the 28th European Symposium on Research in Computer Security (ESORICS 2023)",
+    conference = "ESORICS 2023",
+}
+```
+
 ## Usage
 
 The `launch-tests.sh` execute all tests for all platforms. Individual tests are launched by `attacker/attack.sh`, and they are indicated below. The resulting pcaps will be available under the `pcaps` directory in each platform directory.
